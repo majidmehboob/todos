@@ -1,6 +1,5 @@
 "use client"
 import React,{useState,useEffect} from 'react'
-import { sql } from '@vercel/postgres';
 import { IoMdAdd } from "react-icons/io";
 import { MdDelete } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
@@ -10,6 +9,7 @@ const Home =() => {
   const [model,setmodel]=useState(false)
   const [result,setresult] = useState([])
   const [data,setdata]=useState('')
+  const [files,setfiles]=useState([])
   const [check,setcheck]=useState(false)
   const [edit,setedit]=useState({name:"",status:false})
   const [editdata,seteditdata]=useState({name:"",status:false})
@@ -24,7 +24,9 @@ const Home =() => {
   useEffect(()=>{
     alldata()
   },[])
-
+   function onFileChange(e){
+    e.preventDefault();
+   }
   async function alldata(){
    const response=await getAllItems();
     setresult(response.data)
@@ -47,11 +49,13 @@ const Home =() => {
     }
   }
   async function HandelEdit(props){
-    console.log(editdata.name,props)
     const data={editdata,edit};
     const response =await updateItem(data)
     console.log("response",response)
+    if(response.sucess){
+      setmodel(false)
       alldata()
+    }
   }
   async function HandleDelete(item){
        const response= await deleteItem(item)  
@@ -72,6 +76,12 @@ const Home =() => {
            value={data}
            onChange={(e)=>onChange(e)}
         />
+        <input
+          type='file'
+          placeholder='Select the file'
+          onChange={(e)=>onFileChange(e)}
+          multiple
+        />
         <button 
         className={`ml-5 cursor-pointer  px-2 py-2 bg-black/30 hover:rounded-full transition-all duration-200 border-2 ${check?"-translate-x-0":"-translate-x-10"}`}
         disabled={!check}
@@ -80,13 +90,13 @@ const Home =() => {
         </button>  
        </div>
         <div className='mt-5 w-full p-10 -z-1'>
-        { result && result.length && result.map((item,index)=>{
+        { result && result.length ? result.map((item,index)=>{
           return(
             <div 
              key={index}
-            className={`flex justify-between relative items-center gap-10 space-y-6 shadow-lg p-2`}
+            className={`flex justify-between relative items-center gap-10 space-y-6 shadow-lg p-2 `}
            >
-           <div className={`absolute  bottom-[30%] left-0 right-0 w-full h-0.5 ${item.status?"bg-black/10":"hidden"}`}></div>
+           <div className={`absolute  bottom-[30%] left-5 w-[90%] h-0.5 ${item.status?"bg-black/35":"hidden"}`}></div>
             <h1 className='text-xl'>{item.name}</h1>
             <div className='flex justify-items-center gap-2 text-xl'>
             <MdDelete className=' text-gray-400 -z-1 text-2xl cursor-pointer  hover:text-red-500'
@@ -101,7 +111,8 @@ const Home =() => {
             </div>
             </div>
           )
-        })}
+        }):
+        <h1 className='text-center animate-pulse'>Loading ...</h1>}
       </div>
       </div>
     </div>

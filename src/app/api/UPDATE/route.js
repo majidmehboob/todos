@@ -1,12 +1,13 @@
 import { sql } from '@vercel/postgres';
 import { NextResponse } from 'next/server';
- 
+ export const dynamic = "force-dynamic";
+
 export async function PUT(request) {
   try {
     const data=await request.json()
     const {editdata,edit}= data
   
-    const result =await sql`UPDATE my_app_todo 
+    const result =await sql`UPDATE todo 
     SET name=${data.edit.name},status=${data.edit.status}
      WHERE id=${data.editdata.id};
      `

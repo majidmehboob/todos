@@ -2,9 +2,8 @@ export const getAllItems = async () => {
   try {
     const res = await fetch(`http://localhost:3000/api/GET`, {
       method: "GET",
-      headers: {
-           "content-type": "application/json",
-      },
+      cache: "no-store",
+      
     });
 
     const data = await res.json();
@@ -58,8 +57,9 @@ export const updateItem = async (formData) => {
     const res = await fetch("/api/UPDATE", {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json",
+        "content-type": "application/json",
       },
+      cache: "no-store",
       body: JSON.stringify(formData),
     });
 
